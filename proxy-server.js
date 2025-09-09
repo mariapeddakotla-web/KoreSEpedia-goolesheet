@@ -82,4 +82,4 @@ app.post("/submit-google-form", async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("Proxy running on http://:3000"));
+app.listen(3000, () => console.log("Proxy running on http://localhost:3000"));
