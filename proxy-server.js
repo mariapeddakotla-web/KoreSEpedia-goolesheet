@@ -8,6 +8,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+
 // ====== CONFIG ======
 const CREDENTIALS_PATH = "oauth-credentials.json"; // download from Google Cloud (Web application OAuth)
 const TOKEN_PATH = "token.json";             // will be created automatically
@@ -22,7 +23,7 @@ const { client_secret, client_id, redirect_uris } = credentials.web;
 const oAuth2Client = new google.auth.OAuth2(
   client_id,
   client_secret,
-  redirect_uris[0] 
+  redirect_uris[1] // http://localhost:3000/oauth2callback
 );
 
 // Load token if available
@@ -64,16 +65,15 @@ app.post("/submit-google-form", async (req, res) => {
   try {
     const { name, email, company, industry, useCase, timeline, notes } = req.body;
     const sheets = google.sheets({ version: "v4", auth: oAuth2Client });
-    const timestamp = new Date().toLocaleString(); // or new Date().toISOString()
+
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${SHEET_NAME}!A:H`,
+      range: `${SHEET_NAME}!A:G`,
       valueInputOption: "RAW",
       requestBody: {
-        values: [[timestamp, name, email, company, industry, useCase, timeline, notes]],
+        values: [[name, email, company, industry, useCase, timeline, notes]],
       },
     });
-
 
     res.json({ success: true, message: "Data written to Google Sheet ✅" });
   } catch (err) {
